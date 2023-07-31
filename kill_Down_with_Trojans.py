@@ -34,9 +34,7 @@ def DP_helper(n, tile_values, x, y):  #add tokens later
     #BCs
     if x == n-1 and y == n-1:
         return tile_values[x][y]   # reached end
-    if y >= n:    #out of bounds to the right
-        return -100000
-    if x >= n:
+    if x >= n or y >= n:    #out of bounds
         return -100000
 
     opt1 = DP_helper(n, tile_values, x+1, y) + tile_values[x][y]     # move down
