@@ -26,17 +26,22 @@ def print_tile_data(tile_types, tile_values):
 
 
 def DP(n, H, tile_types, tile_values):
-    # TODO
-    # Placeholder function - implement your logic here
-    # Your code to check whether it is possible to reach the bottom-right
-    # corner without running out of HP should go here.
-    # You should use dynamic programming to solve the problem.
-    # Return True if possible, False otherwise.
+    memo = np.zeros((n, n), dtype=int)
+    return DP_helper(n, tile_values, 0, 0)
 
-    # By defualt we return False
-    # TODO you should change this
-    res = False
-    return res
+
+def DP_helper(n, tile_values, x, y):  #add tokens later
+    #BCs
+    if x == n-1 and y == n-1:
+        return tile_values[x][y]   # reached end
+    if y >= n:    #out of bounds to the right
+        return -100000
+    if x >= n:
+        return -100000
+
+    opt1 = DP_helper(n, tile_values, x+1, y) + tile_values[x][y]     # move down
+    opt2 = DP_helper(n, tile_values, x, y+1) + tile_values[x][y]     # move right
+    return max(opt1, opt2);   #test that it works by spiting out the max path sum
 
 
 def write_output_file(output_file_name, result):
