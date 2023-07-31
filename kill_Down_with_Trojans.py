@@ -26,20 +26,28 @@ def print_tile_data(tile_types, tile_values):
 
 
 def DP(n, H, tile_types, tile_values):
-    memo = np.zeros((n, n), dtype=int)
-    return DP_helper(n, tile_values, 0, 0)
+    memo = np.empty((n, n))
+    memo[:] = np.nan                 # use np.nan as the null value
+
+    print(memo)     # COMMENT OUT!!!
+    return DP_helper(memo, n, tile_values, 0, 0)    #pass memo by ref, should pass tile_values by ref too?
 
 
-def DP_helper(n, tile_values, x, y):  #add tokens later
+def DP_helper(memo, n, tile_values, x, y):  #add tokens later
     #BCs
     if x == n-1 and y == n-1:
         return tile_values[x][y]   # reached end
     if x >= n or y >= n:    #out of bounds
         return -100000
+    # if memo[x][y] == np.nan:   #fun fact: comparing nan to itself returns false, opposite of normal numbers
+    #     return memo[x][y]
+    if not np.isnan(memo[x][y]):    #maybe more readable, esp for noobs like me
+        return memo[x][y]
 
-    opt1 = DP_helper(n, tile_values, x+1, y) + tile_values[x][y]     # move down
-    opt2 = DP_helper(n, tile_values, x, y+1) + tile_values[x][y]     # move right
-    return max(opt1, opt2);   #test that it works by spiting out the max path sum
+    opt1 = DP_helper(memo, n, tile_values, x+1, y) + tile_values[x][y]     # move down, lowkey just call it down and right instead of opt1 and opt2... (tho in future opts can also include using tokens :shrug:)
+    opt2 = DP_helper(memo, n, tile_values, x, y+1) + tile_values[x][y]     # move right
+    memo[x][y] = max(opt1, opt2)
+    return max(opt1, opt2)   #test that it works by spiting out the max path sum
 
 
 def write_output_file(output_file_name, result):
