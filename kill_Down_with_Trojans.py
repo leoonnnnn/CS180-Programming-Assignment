@@ -57,8 +57,8 @@ def DP_helper(memo, n, tile_types, tile_values, x, y):  #add tokens later
     #print(x, y, multiplier, tile_values[x][y])
     #print(tile_types[x][y])    #wait this is actually useful lol, literally tells you the tile type
 
-    opt1 = DP_helper(memo, n, tile_types, tile_values, x+1, y) + ((tile_values[x][y]) * multiplier)   # move down, lowkey just call it down and right instead of opt1 and opt2... (tho in future opts can also include using tokens :shrug:)
-    opt2 = DP_helper(memo, n, tile_types, tile_values, x, y+1) + ((tile_values[x][y]) * multiplier)    # move right
+    opt1 = DP_helper(memo, n, tile_types, tile_values, x+1, y) + (tile_values[x][y] * multiplier)   # move down, lowkey just call it down and right instead of opt1 and opt2... (tho in future opts can also include using tokens :shrug:)
+    opt2 = DP_helper(memo, n, tile_types, tile_values, x, y+1) + (tile_values[x][y] * multiplier)    # move right
     memo[x][y] = max(opt1, opt2)
     return max(opt1, opt2)   #test that it works by spiting out the max path sum
 
