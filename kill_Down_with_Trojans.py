@@ -29,38 +29,45 @@ def DP(n, H, tile_types, tile_values):
     memo = np.empty((n, n))
     memo[:] = np.nan                 # use np.nan as the null value
 
-    print(memo)     # COMMENT OUT!!!
-    res = H + DP_helper(memo, n, tile_types, tile_values, 0, 0)    #pass memo by ref, should pass tile_values by ref too?
-    return res
+    print("\nmemo before:")      # COMMENT OUT!!!
+    print(memo)                  # COMMENT OUT!!!
+    res = H + DP_helper(memo, n, H, tile_types, tile_values, 0, 0)
+    print("memo after:")         # COMMENT OUT!!!
+    print(memo)                  # COMMENT OUT!!!
+    print("Final hp: ", res)     # COMMENT OUT!!!
+    return res >= 0
 
 
-def DP_helper(memo, n, tile_types, tile_values, x, y):  #add tokens later
+def DP_helper(memo, n, hp, tile_types, tile_values, x, y):  #add tokens later
     #BCs
     if x >= n or y >= n:    #out of bounds
         return -100000
-    
-    multiplier = 0
+    if hp < 0:
+        return -123    # can't revive, so penalize reviving    #change to -100000
+
+    type = 0
     if tile_types[x][y] == 0:
-        multiplier = -1        #take damage
+        type = -1        #take damage
         #print(x, y, "damage")
     elif tile_types[x][y] == 1:
-        multiplier = 1         #heal
+        type = 1         #heal
         #print(x, y, "heal")
     #else:
         #maybe for token shit
 
     if x == n-1 and y == n-1:
-        return tile_values[x][y] * multiplier   # reached end
+        return tile_values[x][y] * type   # reached end
     if not np.isnan(memo[x][y]):
         return memo[x][y]
 
-    #print(x, y, multiplier, tile_values[x][y])
+    #print(x, y, type, tile_values[x][y])
     #print(tile_types[x][y])    #wait this is actually useful lol, literally tells you the tile type
-
-    opt1 = DP_helper(memo, n, tile_types, tile_values, x+1, y) + (tile_values[x][y] * multiplier)   # move down, lowkey just call it down and right instead of opt1 and opt2... (tho in future opts can also include using tokens :shrug:)
-    opt2 = DP_helper(memo, n, tile_types, tile_values, x, y+1) + (tile_values[x][y] * multiplier)    # move right
-    memo[x][y] = max(opt1, opt2)
-    return max(opt1, opt2)   #test that it works by spiting out the max path sum
+    curval = tile_values[x][y] * type
+    hp += curval
+    opt1 = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y) + curval   # move down, lowkey just call it down and right instead of opt1 and opt2... (tho in future opts can also include using tokens :shrug:)
+    opt2 = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1) + curval    # move right
+    memo[x][y] = max(opt1, opt2) 
+    return max(opt1, opt2)   #test that it works by spitting out the max path sum
 
 
 def write_output_file(output_file_name, result):

@@ -1,0 +1,21 @@
+do 1 version using max fxn so literally just hw 1 prob 2. then one with or, so combine hw 1 prob 2 with exam q. so basically just adding a few if statements lol
+
+
+ok so did with a max fxn, so now do it with damage tiles too, first just pass tile types and check the exising code by just adding health tile type/checking for it, thennn add damage tiles
+
+
+
+actually dont even need to change from max to or b/c if the max is >= 0 then its possible, if not, then yeah false. also don't need to terminate it early when health drops below -1 UNLESS spec says when your health drops below zero you auto-lose. well matt said in a piazza post that you cant revive, so guess you cant drop below 0 and then come back up again, so need to add that logic in rn first. (even then can still have max and dont need to change to or, basically if you drop below 0 either penalize it or just "end" it. can penalize by checking if H < 0: return -100000)
+
+make a test case where you auto die immediately off the first 2 squares (down or right is big negative), but then possible to end with positive score. then make a test case where H starts as negative (idk weird edge case) <-- but it should return false regardless. tho test with starting hp of -1 and then first two tiles (down and right) are +2. if need extra line of code to check if H < 0 or n <= 0, then add that in the wrapper NOT the helper fxn.
+
+
+rename the local variable "multiplier" to "type" to avoid confusion
+
+max function would help with using tokens, tho or should get the same result, cuz itll go thru eveyr possibiliy (right?), so what am i waffling about :skull:
+
+
+random edgecase, but my code supports negative values (ie health tile with negative value, essentially a damage tile), so bascially if you forget to change the type instead on a testcase (forget u can even change types lol)
+
+
+on the last tile, dont have to add value to hp or do any checks cuz if u die on the last tile, the final return value will be negative anyways, the other negative check is just to see if u died before the end (and somehow gain back enough health)
