@@ -59,25 +59,27 @@ def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok):  #add tokens la
         print("picked up prot token, count: ", pTok)
     #else:
         #maybe for token shit
+
     pTemp = 1
     if tile_types[x][y] == 0 and pTok == 1:
         pTok = 0        # use protection token
         pTemp = 0
         print("used prot token, count: ", pTok)
+    
+    curval = tile_values[x][y] * type * pTemp
 
     if x == n-1 and y == n-1:
-        return tile_values[x][y] * type * pTemp   # reached bottom right
+        return curval   # reached bottom right
     #BCs end ---------------------
 
     #print(x, y, pTok, memo[x][y][pTok])
     #print(x, y, type, tile_values[x][y])
     #print(tile_types[x][y])
-    curval = tile_values[x][y] * type
     hp += curval     
     #if it doesnt affect the memo below, more elegant code would be ... + curval * pTok. and then just set pTok to 0 beforehand if gonna use it
     # see and then in the next call, pTok will have the right value (esp if used)
-    opt1 = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y, pTok) + curval * pTemp    # move down
-    opt2 = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1, pTok) + curval * pTemp    # move right
+    opt1 = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y, pTok) + curval    # move down
+    opt2 = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1, pTok) + curval    # move right
     memo[x][y][pTok] = max(opt1, opt2)    #should it be pTok or use_pTok (like this or inverse, think about it with some simple examples)
     #print(pTok, pTemp)
     return max(opt1, opt2)   #test that it works by spitting out the max path sum
