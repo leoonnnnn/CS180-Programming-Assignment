@@ -19,3 +19,6 @@ random edgecase, but my code supports negative values (ie health tile with negat
 
 
 on the last tile, dont have to add value to hp or do any checks cuz if u die on the last tile, the final return value will be negative anyways, the other negative check is just to see if u died before the end (and somehow gain back enough health)
+
+
+also type will remain as 0 for tile_type 2 and 3 (aka the tokens) so dont need to change any code
