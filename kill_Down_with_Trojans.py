@@ -26,12 +26,12 @@ def print_tile_data(tile_types, tile_values):
 
 
 def DP(n, H, tile_types, tile_values):
-    memo = np.empty((n, n, 2))
+    memo = np.empty((n, n, 2, 2))
     memo[:] = np.nan                 # use np.nan as the null value
 
     #print("\nmemo before:")      # COMMENT OUT!!!
     #print(memo)                  # COMMENT OUT!!!
-    temp = DP_helper(memo, n, H, tile_types, tile_values, 0, 0, 0)
+    temp = DP_helper(memo, n, H, tile_types, tile_values, 0, 0, 0, 0)
     res = H + temp
     #print("memo after:")         # COMMENT OUT!!!
     #print(memo)                  # COMMENT OUT!!!
@@ -41,14 +41,14 @@ def DP(n, H, tile_types, tile_values):
     return res >= 0
 
 
-def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok):  #add tokens later
+def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok, mTok):  #add tokens later
     #BCs -------------------------
     if x >= n or y >= n:    #out of bounds
         return -100000
     if hp < 0:
         return -123    # not allowed to revive, so penalize reviving    #change to -123 for debugging with memo
-    if not np.isnan(memo[x][y][pTok]):
-        return memo[x][y][pTok]
+    if not np.isnan(memo[x][y][pTok][mTok]):
+        return memo[x][y][pTok][mTok]
 
     type = 0
     if tile_types[x][y] == 0:
@@ -59,7 +59,9 @@ def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok):  #add tokens la
         #print(x, y, "heal")
     elif tile_types[x][y] == 2:
         pTok = 1         # pick up protection token
-        print("picked up prot token, count:", pTok, " at ", x, y)
+        #print("picked up prot token, count:", pTok, " at ", x, y)
+    elif tile_types[x][y] == 3:
+        mTok = 1         # pick up protection token
     #else:
         #maybe for token stuff, edit: nvm
     
@@ -76,19 +78,26 @@ def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok):  #add tokens la
     #print(tile_types[x][y])
     # if hp < 0:
     #     return -123 
-    down = DP_helper(memo, n, hp + curval, tile_types, tile_values, x+1, y, pTok) + curval  # move down
+    down = DP_helper(memo, n, hp + curval, tile_types, tile_values, x+1, y, pTok, mTok) + curval  # move down
     #print("down", x, y)
-    right = DP_helper(memo, n, hp + curval, tile_types, tile_values, x, y+1, pTok) + curval    # move right
+    right = DP_helper(memo, n, hp + curval, tile_types, tile_values, x, y+1, pTok, mTok) + curval    # move right
     #print("right", x, y)
     down_ptoken = -12345
     right_ptoken = -12345
     if tile_types[x][y] == 0 and pTok == 1:
-        down_ptoken = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y, 0)  # move down + use token
+        down_ptoken = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y, 0, mTok)  # move down + use token
         #print("pdown", x, y)
-        right_ptoken = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1, 0)    # move right + use token
+        right_ptoken = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1, 0, mTok)    # move right + use token
         #print("pright", x, y)
-    memo[x][y][pTok] = max(down, right, down_ptoken, right_ptoken)    #should it be pTok or use_pTok (like this or inverse, think about it with some simple examples)
-    return max(down, right, down_ptoken, right_ptoken)   #test that it works by spitting out the max path sum
+    down_mtoken = -12345
+    right_mtoken = -12345
+    if tile_types[x][y] == 0 and pTok == 1:
+        down_mtoken = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y, pTok, 0) + curval * mTok   # move down + use token
+        #print("pdown", x, y)
+        right_mtoken = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1, pTok, 0) + curval * mTok    # move right + use token
+        #print("pright", x, y)
+    memo[x][y][pTok][mTok] = max(down, right, down_ptoken, right_ptoken,  down_mtoken, right_mtoken)    #should it be pTok or use_pTok (like this or inverse, think about it with some simple examples)
+    return max(down, right, down_ptoken, right_ptoken,  down_mtoken, right_mtoken)   #test that it works by spitting out the max path sum
 
 
 def write_output_file(output_file_name, result):
