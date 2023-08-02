@@ -22,3 +22,7 @@ on the last tile, dont have to add value to hp or do any checks cuz if u die on 
 
 
 also type will remain as 0 for tile_type 2 and 3 (aka the tokens) so dont need to change any code
+
+commit 49eeaea: ok so added prot token and it works, butttt no "choice" yet, it uses it immediately on the first square. So add that next.
+
+hmm ok maybe not best solution, but u only need the token if the damage will kill you, so save it till then, but there are cases where you'd take consecutive damage, where using it earlier would help

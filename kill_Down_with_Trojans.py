@@ -61,8 +61,10 @@ def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok):  #add tokens la
         #maybe for token shit
 
     pTemp = 1
-    if tile_types[x][y] == 0 and pTok == 1:
-        pTok = 0        # use protection token
+    #print(hp - tile_values[x][y], x, y)
+    if tile_types[x][y] == 0 and pTok == 1 and hp < tile_values[x][y]:
+        #print(hp - tile_values[x][y])    # hypothetical hp after not using MattTM protection
+        pTok = 0        # use protection token, need to add some logic to decide when to use token
         pTemp = 0
         print("used prot token, count: ", pTok)
     
