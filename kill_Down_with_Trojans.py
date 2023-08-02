@@ -29,12 +29,15 @@ def DP(n, H, tile_types, tile_values):
     memo = np.empty((n, n, 2))
     memo[:] = np.nan                 # use np.nan as the null value
 
-    print("\nmemo before:")      # COMMENT OUT!!!
-    print(memo)                  # COMMENT OUT!!!
-    res = H + DP_helper(memo, n, H, tile_types, tile_values, 0, 0, 0)
-    print("memo after:")         # COMMENT OUT!!!
-    print(memo)                  # COMMENT OUT!!!
-    print("Final hp: ", res)     # COMMENT OUT!!!
+    #print("\nmemo before:")      # COMMENT OUT!!!
+    #print(memo)                  # COMMENT OUT!!!
+    temp = DP_helper(memo, n, H, tile_types, tile_values, 0, 0, 0)
+    res = H + temp
+    #print("memo after:")         # COMMENT OUT!!!
+    #print(memo)                  # COMMENT OUT!!!
+    print("Starting hp:", H)
+    print("temp:", temp)
+    print("Final hp:", res)     # COMMENT OUT!!!
     return res >= 0
 
 
@@ -43,7 +46,7 @@ def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok):  #add tokens la
     if x >= n or y >= n:    #out of bounds
         return -100000
     if hp < 0:
-        return -123    # not allowed to revive, so penalize reviving    #change to -100000
+        return -123    # not allowed to revive, so penalize reviving    #change to -123 for debugging with memo
     if not np.isnan(memo[x][y][pTok]):
         return memo[x][y][pTok]
 
@@ -56,35 +59,36 @@ def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok):  #add tokens la
         #print(x, y, "heal")
     elif tile_types[x][y] == 2:
         pTok = 1         # pick up protection token
-        print("picked up prot token, count: ", pTok)
+        print("picked up prot token, count:", pTok, " at ", x, y)
     #else:
-        #maybe for token shit
-
-    pTemp = 1
-    #print(hp - tile_values[x][y], x, y)
-    if tile_types[x][y] == 0 and pTok == 1 and hp < tile_values[x][y]:
-        #print(hp - tile_values[x][y])    # hypothetical hp after not using MattTM protection
-        pTok = 0        # use protection token, need to add some logic to decide when to use token
-        pTemp = 0
-        print("used prot token, count: ", pTok)
+        #maybe for token stuff, edit: nvm
     
-    curval = tile_values[x][y] * type * pTemp
+    curval = tile_values[x][y] * type
+    print(curval)
 
     if x == n-1 and y == n-1:
-        return curval   # reached bottom right
+        #print(hp, curval, 1 - pTok, x, y)
+        return curval * (1 - pTok)   # reached bottom right
     #BCs end ---------------------
 
     #print(x, y, pTok, memo[x][y][pTok])
     #print(x, y, type, tile_values[x][y])
     #print(tile_types[x][y])
-    hp += curval     
-    #if it doesnt affect the memo below, more elegant code would be ... + curval * pTok. and then just set pTok to 0 beforehand if gonna use it
-    # see and then in the next call, pTok will have the right value (esp if used)
-    opt1 = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y, pTok) + curval    # move down
-    opt2 = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1, pTok) + curval    # move right
-    memo[x][y][pTok] = max(opt1, opt2)    #should it be pTok or use_pTok (like this or inverse, think about it with some simple examples)
-    #print(pTok, pTemp)
-    return max(opt1, opt2)   #test that it works by spitting out the max path sum
+    # if hp < 0:
+    #     return -123 
+    down = DP_helper(memo, n, hp + curval, tile_types, tile_values, x+1, y, pTok) + curval  # move down
+    #print("down", x, y)
+    right = DP_helper(memo, n, hp + curval, tile_types, tile_values, x, y+1, pTok) + curval    # move right
+    #print("right", x, y)
+    down_ptoken = -12345
+    right_ptoken = -12345
+    if tile_types[x][y] == 0 and pTok == 1:
+        down_ptoken = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y, 0)  # move down + use token
+        #print("pdown", x, y)
+        right_ptoken = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1, 0)    # move right + use token
+        #print("pright", x, y)
+    memo[x][y][pTok] = max(down, right, down_ptoken, right_ptoken)    #should it be pTok or use_pTok (like this or inverse, think about it with some simple examples)
+    return max(down, right, down_ptoken, right_ptoken)   #test that it works by spitting out the max path sum
 
 
 def write_output_file(output_file_name, result):

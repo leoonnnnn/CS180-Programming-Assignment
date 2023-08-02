@@ -26,3 +26,42 @@ also type will remain as 0 for tile_type 2 and 3 (aka the tokens) so dont need t
 commit 49eeaea: ok so added prot token and it works, butttt no "choice" yet, it uses it immediately on the first square. So add that next.
 
 hmm ok maybe not best solution, but u only need the token if the damage will kill you, so save it till then, but there are cases where you'd take consecutive damage, where using it earlier would help
+
+
+
+commit d246ac9: It doesnt use tokens unless the damage will kill you, butttt doesnt account for consecutive damage. Maybe current tile won't kill you, but it'll drop you low enough that next one will.
+
+Case A (test_13)
+hp: 10
+tile 1: prot token
+tile 2: -8
+tile 3: -4
+tile 4: -4
+fails this one, but should pass
+
+Case B (test_14)
+hp: 10
+tile 1: prot token
+tile 2: -8
+tile 3: prot token
+tile 4: -4
+tile 5: -4
+fails this one, but should pass
+same thing but with extra prot token, basically it should use the first one cuz will get another.
+So that means we should go thru every possibility, which is not what my code is doing.
+What it should do is if got a token, then use or not use on next damage tile (literally do every combo)
+
+starting hp = 10
+prot -5 -8 -4 prot +3 -1 -2 -9    this is survivable (make this test_15)
+Case c (test_15)
+hp: 10
+tile 1: prot token
+tile 2: -5
+tile 3: -8
+tile 4: -4
+tile 5: prot token
+tile 6: +3
+tile 7: -1
+tile 8: -2
+tile 9: -9
+fails this one, but should pass
