@@ -78,6 +78,8 @@ def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok, mTok):  #add tok
     #print(tile_types[x][y])
     # if hp < 0:
     #     return -123 
+    if hp + curval < 0 and pTok != 1:
+        return -777
     down = DP_helper(memo, n, hp + curval, tile_types, tile_values, x+1, y, pTok, mTok) + curval  # move down
     #print("down", x, y)
     right = DP_helper(memo, n, hp + curval, tile_types, tile_values, x, y+1, pTok, mTok) + curval    # move right
