@@ -91,7 +91,7 @@ def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok, mTok):  #add tok
         #print("pright", x, y)
     down_mtoken = -12345
     right_mtoken = -12345
-    if tile_types[x][y] == 0 and pTok == 1:
+    if tile_types[x][y] == 1 and mTok == 1:
         down_mtoken = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y, pTok, 0) + curval * mTok   # move down + use token
         #print("pdown", x, y)
         right_mtoken = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1, pTok, 0) + curval * mTok    # move right + use token
