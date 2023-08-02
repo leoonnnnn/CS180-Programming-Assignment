@@ -35,9 +35,9 @@ def DP(n, H, tile_types, tile_values):
     res = H + temp
     #print("memo after:")         # COMMENT OUT!!!
     #print(memo)                  # COMMENT OUT!!!
-    print("Starting hp:", H)
-    print("temp:", temp)
-    print("Final hp:", res)     # COMMENT OUT!!!
+    #print("Starting hp:", H)
+    #print("temp:", temp)
+    #print("Final hp:", res)     # COMMENT OUT!!!
     return res >= 0
 
 
@@ -66,7 +66,7 @@ def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok, mTok):  #add tok
         #maybe for token stuff, edit: nvm
     
     curval = tile_values[x][y] * type
-    print(curval)
+    #print(curval)
 
     if x == n-1 and y == n-1:
         #print(hp, curval, 1 - pTok, x, y)
