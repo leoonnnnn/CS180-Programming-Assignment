@@ -33,19 +33,21 @@ def DP(n, H, tile_types, tile_values):
     #print(memo)                  # COMMENT OUT!!!
     temp = DP_helper(memo, n, H, tile_types, tile_values, 0, 0, 0, 0)
     res = H + temp
-    #print("memo after:")         # COMMENT OUT!!!
-    #print(memo)                  # COMMENT OUT!!!
-    #print("Starting hp:", H)
-    #print("temp:", temp)
-    #print("Final hp:", res)     # COMMENT OUT!!!
+    print("memo after:")         # COMMENT OUT!!!
+    print(memo)                  # COMMENT OUT!!!
+    print("Starting hp:", H)
+    print("temp:", temp)
+    print("Final hp:", res)     # COMMENT OUT!!!
     return res >= 0
 
 
 def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok, mTok):  #add tokens later
     #BCs -------------------------
     if x >= n or y >= n:    #out of bounds
+        print(-100000)
         return -100000
     if hp < 0:
+        print(-123)
         return -123    # not allowed to revive, so penalize reviving    #change to -123 for debugging with memo
     if not np.isnan(memo[x][y][pTok][mTok]):
         return memo[x][y][pTok][mTok]
@@ -76,6 +78,7 @@ def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok, mTok):  #add tok
         #print(x, y, "damage")
         if tile_types[x][y] == 1 and mTok == 1:       # health tile and have mult token
             multiplier = 2         #double
+        print(curval * multiplier)
         return curval * multiplier
     #BCs end ---------------------
 
@@ -87,24 +90,25 @@ def DP_helper(memo, n, hp, tile_types, tile_values, x, y, pTok, mTok):  #add tok
     if hp + curval < 0 and pTok != 1:
         return -777
     down = DP_helper(memo, n, hp + curval, tile_types, tile_values, x+1, y, pTok, mTok) + curval  # move down
-    #print("down", x, y)
+    print(x, y, "down", hp)
     right = DP_helper(memo, n, hp + curval, tile_types, tile_values, x, y+1, pTok, mTok) + curval    # move right
-    #print("right", x, y)
+    print(x, y, "right", hp)
     down_ptoken = -12345
     right_ptoken = -12345
     if tile_types[x][y] == 0 and pTok == 1:
-        down_ptoken = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y, 0, mTok)  # move down + use token
-        #print("pdown", x, y)
-        right_ptoken = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1, 0, mTok)    # move right + use token
-        #print("pright", x, y)
+        down_ptoken = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y, 0, mTok)  # use token + move down
+        print(x, y, "pdown", hp)
+        right_ptoken = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1, 0, mTok)    # use token + move right
+        print(x, y, "pright", hp)
     down_mtoken = -12345
     right_mtoken = -12345
     if tile_types[x][y] == 1 and mTok == 1:
-        down_mtoken = DP_helper(memo, n, hp, tile_types, tile_values, x+1, y, pTok, 0) + curval * 2   # move down + use token
-        #print("pdown", x, y)
-        right_mtoken = DP_helper(memo, n, hp, tile_types, tile_values, x, y+1, pTok, 0) + curval * 2    # move right + use token
-        #print("pright", x, y)
+        down_mtoken = DP_helper(memo, n, hp + curval * 2, tile_types, tile_values, x+1, y, pTok, 0) + curval * 2   # use token + move down
+        print(x, y, "mdown", hp, down_mtoken)
+        right_mtoken = DP_helper(memo, n, hp + curval * 2, tile_types, tile_values, x, y+1, pTok, 0) + curval * 2    # use token + move right
+        print(x, y, "mright", hp, right_mtoken)
     memo[x][y][pTok][mTok] = max(down, right, down_ptoken, right_ptoken,  down_mtoken, right_mtoken)    #should it be pTok or use_pTok (like this or inverse, think about it with some simple examples)
+    print("max:", max(down, right, down_ptoken, right_ptoken,  down_mtoken, right_mtoken))
     return max(down, right, down_ptoken, right_ptoken,  down_mtoken, right_mtoken)   #test that it works by spitting out the max path sum
 
 
