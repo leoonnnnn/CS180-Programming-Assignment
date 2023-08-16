@@ -26,67 +26,66 @@ def print_tile_data(tile_types, tile_values):
 
 
 def DP(n, H, tile_types, tile_values):
-    memo = np.full((n, n, 2, 2), -1)            #just dont allow negative values
+    memo = np.full((n, n, 2, 2), -1)
 
     # print("\nmemo before:")      # COMMENT OUT!!!
-    # print(memo)                  # COMMENT OUT!!!
-    #temp = DP_helper(memo, n, H, tile_types, tile_values, 0, 0, 0, 0)
-    #res = H + temp
-    #res = temp
+    # print(memo.transpose((3, 2, 0, 1)))      # COMMENT OUT!!!
+
     res = DP_helper(memo, n, tile_types, tile_values, 0, 0, 0, 0)
+    
     # print("memo after:")         # COMMENT OUT!!!
-    # print(memo)                  # COMMENT OUT!!!
+    # print(memo.transpose((3, 2, 0, 1)))      # COMMENT OUT!!!
     #print("Starting hp:", H)
-    #print("temp:", temp)
-    #print("Final hp:", res)     # COMMENT OUT!!!
-    return res
+    #print("min needed hp:", res)     # COMMENT OUT!!!
+    return res <= H
 
 
-def DP_helper(memo, n, tile_types, tile_values, x, y, pTok, mTok):  #add tokens later
+def DP_helper(memo, n, tile_types, tile_values, x, y, pTok, mTok):
     if x == n-1 and y == n-1:
         if tile_types[x][y] == 0 and pTok != 1:
-            return -tile_values[x][y]
+            return tile_values[x][y]
         return 0
     if x >= n or y >= n:
         return 100000000000000
     if memo[x][y][pTok][mTok] != -1:
         return memo[x][y][pTok][mTok]
     
-    ans = -2
+    ans = -2     # prob don't need this anymore
     if tile_types[x][y] == 0:
         if pTok == 1:
             tok_down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, 0, mTok)
             tok_right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, 0, mTok)
-            down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, 1, mTok) - tile_values[x][y]
-            right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, 1, mTok) - tile_values[x][y]
+            down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, 1, mTok) + tile_values[x][y]
+            right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, 1, mTok) + tile_values[x][y]
             ans = min(tok_down, tok_right, down, right)
         else:
-            down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, 0, mTok) - tile_values[x][y]
-            right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, 0, mTok) - tile_values[x][y]
+            down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, 0, mTok) + tile_values[x][y]
+            right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, 0, mTok) + tile_values[x][y]
             ans = min(down, right)
     if tile_types[x][y] == 1:
         if mTok == 1:
-            tok_down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, pTok, 0) + 2 * tile_values[x][y]
-            tok_right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, pTok, 0) + 2 * tile_values[x][y]
-            down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, pTok, 1) + tile_values[x][y]
-            right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, pTok, 1) + tile_values[x][y]
-            ans = min(down, right)
+            tok_down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, pTok, 0) - 2 * tile_values[x][y]
+            tok_right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, pTok, 0) - 2 * tile_values[x][y]
+            down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, pTok, 1) - tile_values[x][y]
+            right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, pTok, 1) - tile_values[x][y]
+            ans = min(tok_down, tok_right, down, right)
         else:
-            down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, pTok, 0) + tile_values[x][y]
-            right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, pTok, 0) + tile_values[x][y]
+            down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, pTok, 0) - tile_values[x][y]
+            right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, pTok, 0) - tile_values[x][y]
             ans = min(down, right)
     if tile_types[x][y] == 2:
-        down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, 1, mTok) + tile_values[x][y]
-        right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, 1, mTok) + tile_values[x][y]
+        down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, 1, mTok)
+        right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, 1, mTok)
         ans = min(down, right)
     if tile_types[x][y] == 3:
-        down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, pTok, 1) + tile_values[x][y]
-        right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, pTok, 1) + tile_values[x][y]
+        down = DP_helper(memo, n, tile_types, tile_values, x + 1, y, pTok, 1)
+        right = DP_helper(memo, n, tile_types, tile_values, x, y + 1, pTok, 1)
         ans = min(down, right)
     if ans < 0:
         ans = 0
     memo[x][y][pTok][mTok] = ans
     return ans
+
 
 def write_output_file(output_file_name, result):
     with open(output_file_name, 'w') as file:
